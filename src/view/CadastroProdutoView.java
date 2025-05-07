@@ -17,12 +17,9 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.BorderFactory; //basicamente um padding do css
 
 import controller.Caixa;
-import model.CodigoDuplicadoException;
 import model.Produto;
 
-/**
- * Interface gráfica para cadastro de produtos.
- */
+
 public class CadastroProdutoView extends JFrame {
     private Caixa caixa;
     
@@ -128,68 +125,66 @@ public class CadastroProdutoView extends JFrame {
         double preco;
         int estoque;
 
+        // Validações
+        if (txtCodigo.getText().trim().isEmpty() || 
+            txtNome.getText().trim().isEmpty() || 
+            txtPreco.getText().trim().isEmpty() || 
+            txtEstoque.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Todos os campos são obrigatórios!",
+                    "Erro", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         try {
-            // Validações
-            if (txtCodigo.getText().trim().isEmpty() || 
-                txtNome.getText().trim().isEmpty() || 
-                txtPreco.getText().trim().isEmpty() || 
-                txtEstoque.getText().trim().isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Todos os campos são obrigatórios!",
+            preco = Double.parseDouble(txtPreco.getText().trim());
+            if (preco <= 0) {
+                JOptionPane.showMessageDialog(this, "O preço deve ser maior que zero!", 
                         "Erro", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-
-            try {
-                preco = Double.parseDouble(txtPreco.getText().trim());
-                if (preco <= 0) {
-                    JOptionPane.showMessageDialog(this, "O preço deve ser maior que zero!", 
-                            "Erro", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "Preço inválido!", 
-                        "Erro", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            
-            try {
-                estoque = Integer.parseInt(txtEstoque.getText().trim());
-                if (estoque < 0) {
-                    JOptionPane.showMessageDialog(this, "O estoque não pode ser negativo!", 
-                            "Erro", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "Estoque inválido!", 
-                        "Erro", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            
-            // Criar o produto
-            Produto novoProduto = new Produto(
-                    txtCodigo.getText().trim(),
-                    txtNome.getText().trim(),
-                    preco,
-                    estoque
-            );
-            
-            // Salvar no controller
-            caixa.cadastrarProduto(novoProduto);
-            
-            // Atualizar tabela
-            atualizarTabela();
-            
-            // Limpar campos
-            limparCampos();
-            
-            JOptionPane.showMessageDialog(this, "Produto cadastrado com sucesso!", 
-                    "Sucesso", JOptionPane.INFORMATION_MESSAGE);
-            
-        } catch (CodigoDuplicadoException e) {
-            JOptionPane.showMessageDialog(this, e.getMessage(), 
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Preço inválido!", 
                     "Erro", JOptionPane.ERROR_MESSAGE);
+            return;
         }
+        
+        try {
+            estoque = Integer.parseInt(txtEstoque.getText().trim());
+            if (estoque < 0) {
+                JOptionPane.showMessageDialog(this, "O estoque não pode ser negativo!", 
+                        "Erro", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Estoque inválido!", 
+                    "Erro", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        // Criar o produto
+        Produto novoProduto = new Produto(
+                txtCodigo.getText().trim(),
+                txtNome.getText().trim(),
+                preco,
+                estoque
+        );
+        
+        // Salvar no controller
+        boolean cadastrado = caixa.cadastrarProduto(novoProduto);
+        if (!cadastrado) {
+            JOptionPane.showMessageDialog(this, "Já existe um produto com esse código!", 
+                    "Erro", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        // Atualizar tabela
+        atualizarTabela();
+        
+        // Limpar campos
+        limparCampos();
+        
+        JOptionPane.showMessageDialog(this, "Produto cadastrado com sucesso!", 
+                "Sucesso", JOptionPane.INFORMATION_MESSAGE);
     }
     
     /**

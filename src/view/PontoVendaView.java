@@ -21,7 +21,6 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.table.DefaultTableModel;
 
 import controller.Caixa;
-import model.EstoqueInsuficienteException;
 import model.ItemVenda;
 import model.Produto;
 import model.Venda;
@@ -125,9 +124,9 @@ public class PontoVendaView extends JFrame {
         
         // Layout principal
         setLayout(new BorderLayout(10, 10));
-        JPanel painelAdicionarItem = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        painelAdicionarItem.add(painelSuperior);
-        painelAdicionarItem.add(btnAdicionar);
+        JPanel painelAdicionarItem = new JPanel(new BorderLayout());
+        painelAdicionarItem.add(painelSuperior, BorderLayout.CENTER);
+        painelAdicionarItem.add(btnAdicionar, BorderLayout.EAST);
         
         add(painelAdicionarItem, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
@@ -236,24 +235,23 @@ public class PontoVendaView extends JFrame {
             return;
         }
         
-        try {
-            // Registrar a venda no caixa
-            caixa.realizarVenda(vendaAtual);
-            
-            JOptionPane.showMessageDialog(this, 
-                    "Venda finalizada com sucesso!\nNúmero: " + vendaAtual.getNumero(), 
-                    "Sucesso", JOptionPane.INFORMATION_MESSAGE);
-            
-            // Iniciar nova venda
-            vendaAtual = new Venda();
-            atualizarTabelaItens();
-            atualizarTotal();
-            atualizarComboBoxProdutos();
-            
-        } catch (EstoqueInsuficienteException e) {
-            JOptionPane.showMessageDialog(this, e.getMessage(), 
+        // Registrar a venda no caixa
+        boolean realizada = caixa.realizarVenda(vendaAtual);
+        if (!realizada) {
+            JOptionPane.showMessageDialog(this, "Estoque insuficiente para um ou mais produtos!", 
                     "Erro", JOptionPane.ERROR_MESSAGE);
+            return;
         }
+        
+        JOptionPane.showMessageDialog(this, 
+                "Venda finalizada com sucesso!\nNúmero: " + vendaAtual.getNumero(), 
+                "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+        
+        // Iniciar nova venda
+        vendaAtual = new Venda();
+        atualizarTabelaItens();
+        atualizarTotal();
+        atualizarComboBoxProdutos();
     }
     
     /**

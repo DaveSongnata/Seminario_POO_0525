@@ -7,7 +7,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import controller.Caixa;
-import model.CodigoDuplicadoException;
 import model.Produto;
 import view.CadastroProdutoView;
 import view.GestaoVendasView;
@@ -69,15 +68,29 @@ HIDE_ON_CLOSE
     }
 
     private static void adicionarProdutosExemplo() {
-        try {
-            caixa.cadastrarProduto(new Produto("001", "Arroz 5Kg", 25.90, 10));
-            caixa.cadastrarProduto(new Produto("002", "Feijão 1Kg", 8.90, 20));
-            caixa.cadastrarProduto(new Produto("003", "Café 500g", 12.50, 15));
-            caixa.cadastrarProduto(new Produto("004", "Óleo de Soja 900ml", 7.80, 30));
-            caixa.cadastrarProduto(new Produto("005", "Açúcar 2Kg", 9.70, 25));
-        } catch (CodigoDuplicadoException e) {
+        if (!caixa.cadastrarProduto(new Produto("001", "Arroz 5Kg", 25.90, 10))) {
             JOptionPane.showMessageDialog(null,
-                    "Erro ao cadastrar produtos: " + e.getMessage(),
+                    "Erro ao cadastrar produto: 001 já existe!",
+                    "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+        if (!caixa.cadastrarProduto(new Produto("002", "Feijão 1Kg", 8.90, 20))) {
+            JOptionPane.showMessageDialog(null,
+                    "Erro ao cadastrar produto: 002 já existe!",
+                    "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+        if (!caixa.cadastrarProduto(new Produto("003", "Café 500g", 12.50, 15))) {
+            JOptionPane.showMessageDialog(null,
+                    "Erro ao cadastrar produto: 003 já existe!",
+                    "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+        if (!caixa.cadastrarProduto(new Produto("004", "Óleo de Soja 900ml", 7.80, 30))) {
+            JOptionPane.showMessageDialog(null,
+                    "Erro ao cadastrar produto: 004 já existe!",
+                    "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+        if (!caixa.cadastrarProduto(new Produto("005", "Açúcar 2Kg", 9.70, 25))) {
+            JOptionPane.showMessageDialog(null,
+                    "Erro ao cadastrar produto: 005 já existe!",
                     "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }

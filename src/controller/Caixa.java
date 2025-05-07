@@ -2,8 +2,6 @@ package controller;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import model.CodigoDuplicadoException;
-import model.EstoqueInsuficienteException;
 import model.ItemVenda;
 import model.Produto;
 import model.Venda;
@@ -58,15 +56,16 @@ public class Caixa {
      * Cadastra um novo produto, validando se o código já existe
      * 
      * @param novo Produto a ser cadastrado
-     * @throws CodigoDuplicadoException Se já existe um produto com o mesmo código
+     * @return true se cadastrado com sucesso, false se código já existe
      */
-    public void cadastrarProduto(Produto novo) throws CodigoDuplicadoException {
+    public boolean cadastrarProduto(Produto novo) {
         // Verifica se já existe produto com o mesmo código
         if (produtos.stream().anyMatch(p -> p.getCodigo().equals(novo.getCodigo()))) {
-            throw new CodigoDuplicadoException("Código já existe: " + novo.getCodigo());
+            return false;
         }
         // Adiciona o produto na lista
         produtos.add(novo);
+        return true;
     }
     
     /**
@@ -87,24 +86,26 @@ public class Caixa {
      * Realiza uma venda, atualizando o estoque dos produtos
      * 
      * @param venda Venda a ser realizada
-     * @throws EstoqueInsuficienteException Se não houver estoque suficiente
+     * @return true se venda realizada, false se estoque insuficiente
      */
-    public void realizarVenda(Venda venda) throws EstoqueInsuficienteException {
+    public boolean realizarVenda(Venda venda) {
         // Verificar se há estoque suficiente para todos os itens
         for (ItemVenda item : venda.getItens()) {
             Produto p = item.getProduto();
             if (p.getEstoque() < item.getQuantidade()) {
-                throw new EstoqueInsuficienteException("Estoque insuficiente para o produto: " + p.getNome());
+                return false;
             }
-            // Atualizar o estoque do produto
+        }
+        // Atualizar o estoque dos produtos
+        for (ItemVenda item : venda.getItens()) {
+            Produto p = item.getProduto();
             p.setEstoque(p.getEstoque() - item.getQuantidade());
         }
-        
         // Adicionar a venda à lista
         vendas.add(venda);
-        
         // Atualizar o saldo do caixa
         saldoCaixa += venda.calcularTotal();
+        return true;
     }
     
     /**
