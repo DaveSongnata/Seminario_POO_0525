@@ -135,6 +135,7 @@ public class PontoVendaView extends JFrame {
     
     /**
      * Atualiza o ComboBox com a lista de produtos
+     * 
      */
     private void atualizarComboBoxProdutos() {
         DefaultComboBoxModel<Produto> model = new DefaultComboBoxModel<>();
@@ -146,23 +147,35 @@ public class PontoVendaView extends JFrame {
             }
         }
         
+     // Define o modelo do combo box com a lista de produtos
         cbProdutos.setModel(model);
-        
-        // Customizar exibição
+
+        // Personaliza a forma como cada item do combo será exibido na tela
         cbProdutos.setRenderer(new javax.swing.DefaultListCellRenderer() {
+            
+            // Sobrescreve o método responsável por montar visualmente cada item da lista
             @Override
             public java.awt.Component getListCellRendererComponent(
                     javax.swing.JList<?> list, Object value, int index, 
                     boolean isSelected, boolean cellHasFocus) {
+                
+                // Mantém o comportamento visual padrão (como cor de seleção, etc.)
                 super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                
+                // Verifica se o item atual é um objeto da classe Produto
                 if (value instanceof Produto) {
-                    Produto produto = (Produto) value;
+                    Produto produto = (Produto) value;  // Faz o cast para Produto
+                    
+                    // Define o texto exibido no item do combo: "código - nome (preço) - estoque"
                     setText(produto.getCodigo() + " - " + produto.getNome() + 
                             " (R$ " + produto.getPreco() + ") - Estoque: " + produto.getEstoque());
                 }
+                
+                // Retorna o componente visual do item renderizado (neste caso, o próprio JLabel)
                 return this;
             }
         });
+
     }
     
     /**
